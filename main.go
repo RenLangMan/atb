@@ -14,6 +14,7 @@ import (
 var flagInput = flag.String("i", "", "input file name")
 var flagOutput = flag.String("o", "output.bean", "output file name")
 var flagConfig = flag.String("c", "config.conf", "config file name")
+var flagStrict = flag.Bool("s", false, "use strict mode: no default account")
 
 // Config set all default values
 type Config struct {
@@ -38,9 +39,14 @@ func main() {
 		log.Println("read config error:", err)
 		return
 	}
-	err = ReadAliBill(*flagInput, conf.AccountList)
+	err = ReadAliBill(*flagInput)
 	if err != nil {
 		log.Println("read ali bill error:", err)
+		return
+	}
+	err = FillBills(conf.AccountList)
+	if err != nil {
+		log.Println("fill bills error:", err)
 		return
 	}
 	err = WriteBean(&conf)

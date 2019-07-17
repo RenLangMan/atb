@@ -10,7 +10,6 @@ import (
 	"log"
 	"strings"
 	"strconv"
-	"fmt"
 )
 
 
@@ -22,6 +21,8 @@ const LocalTimeFmt = "2006-01-02 15:04:05 -0700"
 type TxTypeType string
 const (
 	TxTypeSend TxTypeType = "支出"
+	TxTypeRecv TxTypeType = "收入"
+	TxTypeEmpty TxTypeType = ""
 	TxTypeNil TxTypeType = "Nil"
 )
 
@@ -29,6 +30,8 @@ const (
 type MoneyStatusType string
 const (
 	MoneySend MoneyStatusType = "已支出"
+	MoneyRecv MoneyStatusType = "已收入"
+	MoneyTransfer MoneyStatusType = "资金转移"
 	MoneyStatusNil MoneyStatusType = "Nil"
 )
 
@@ -40,11 +43,6 @@ var LineNum int
 // AliBillList stores all of tx in a file
 var AliBillList []AliBill
 
-
-type AccountInfo struct {
-	Name string
-	Money float64
-}
 
 type AliBill struct {
 	DealNo string `json:"dealNo"` // 交易号
@@ -79,11 +77,11 @@ const (
 // AliBillAttr helps us determine which account it
 // should go
 type AliBillAttr struct {
-	DealSrc string `json:"dealSrc"`
-	DealSrcMatchMethod MatchType `json:"dealSrcMatchMethod"`
-	Peer string `json:"peer"`
+	Status []string `json:"status"`
+	StatusMatchMethod MatchType `json:"statusMatchMethod"`
+	Peer []string `json:"peer"`
 	PeerMatchMethod MatchType `json:"peerMatchMethod"`
-	ItemName string `json:"itemName"`
+	ItemName []string `json:"itemName"`
 	ItemNameMatchMethod MatchType `json:"itemNameMatchMethod"`
 	PlusAccount string `json:"plusAccount"`
 	MinusAccount string `json:"minusAccount"`
@@ -94,6 +92,10 @@ func getTxType(str string) TxTypeType {
 	switch str {
 		case string(TxTypeSend):
 			return TxTypeSend
+		case string(TxTypeRecv):
+			return TxTypeRecv
+		case string(TxTypeEmpty):
+			return TxTypeEmpty
 		default:
 			return TxTypeNil
 	}
@@ -126,10 +128,12 @@ func parseAlipayBill(line string) error {
 		log.Println("parse create time error:", array[2], err)
 		return err
 	}
-	bill.PayTime, err = time.Parse(LocalTimeFmt, array[3] + " +0800")
-	if err != nil {
-		log.Println("parse paytime error:", array[3], err)
-		return err
+	if array[3] != "" {
+		bill.PayTime, err = time.Parse(LocalTimeFmt, array[3] + " +0800")
+		if err != nil {
+			log.Println("parse paytime error:", array[3], err, array)
+			return err
+		}
 	}
 	bill.LastUpdate, err = time.Parse(LocalTimeFmt, array[4] + " +0800")
 	if err != nil {
@@ -147,8 +151,8 @@ func parseAlipayBill(line string) error {
 	}
 	bill.TxType = getTxType(array[10])
 	if bill.TxType == TxTypeNil {
-		log.Println("get tx type error:", array[10])
-		return err
+		log.Println("get tx type error:", array[10], array)
+		return ErrBadTxType
 	}
 	bill.Status = array[11]
 	bill.ServiceFee, err = strconv.ParseFloat(array[12], 32)
@@ -164,7 +168,7 @@ func parseAlipayBill(line string) error {
 	bill.Comment = array[14]
 	bill.MoneyStatus = getMoneyStatus(array[15])
 	if bill.MoneyStatus == MoneyStatusNil {
-		log.Println("get money status error:", err)
+		log.Println("get money status error:", err, array[15])
 		return err
 	}
 	AliBillList = append(AliBillList, bill)
@@ -176,6 +180,10 @@ func getMoneyStatus(str string) MoneyStatusType {
 	switch str {
 		case string(MoneySend):
 			return MoneySend
+		case string(MoneyRecv):
+			return MoneyRecv
+		case string(MoneyTransfer):
+			return MoneyTransfer
 		default:
 			return MoneyStatusNil
 	}
@@ -184,73 +192,11 @@ func getMoneyStatus(str string) MoneyStatusType {
 
 
 // ReadAliBill check all lines of bill
-func ReadAliBill(fn string, list []AliBillAttr) error {
+func ReadAliBill(fn string) error {
 	err := tools.ReadLine(fn, parseAlipayBill)
 	if err != nil {
 		log.Println("read bills error:", err)
 		return err
 	}
-	// log.Println("fill bill", len(AliBillList))
-	FillBills(list)
 	return nil
-}
-
-
-func checkAttr(set string, method MatchType, check string) bool {
-	// if set is null, it should be handled by caller
-	if method == MatchTypeContain {
-		if strings.Contains(check, set) {
-			return true
-		}
-		return false
-	}
-	if check != set {
-		return false
-	}
-	return true
-}
-
-
-func getAccount(bill AliBill, list []AliBillAttr) (string, string) {
-	for _, attr := range list {
-		if attr.DealSrc != "" && checkAttr(attr.DealSrc, attr.DealSrcMatchMethod, bill.DealSrc) == false {
-			continue
-		}
-		if attr.Peer != "" && checkAttr(attr.Peer, attr.PeerMatchMethod, bill.Peer) == false {
-			continue
-		}
-		if attr.ItemName != "" && checkAttr(attr.ItemName, attr.ItemNameMatchMethod, bill.ItemName) == false {
-			continue
-		}
-		return attr.PlusAccount, attr.MinusAccount
-	}
-	// default account
-	return "", ""
-}
-
-
-func FillBills(list []AliBillAttr) {
-	for idx, bill := range AliBillList {
-		plus, minus := getAccount(bill, list)
-		AliBillList[idx].MinusAccount = minus
-		AliBillList[idx].PlusAccount = plus
-		// printBill(AliBillList[idx])
-	}
-}
-
-
-func printBill(bill AliBill) {
-	fmt.Println("---------------------")
-	fmt.Println("dealsrc", bill.DealSrc)
-	fmt.Println("type", bill.Type)
-	fmt.Println("peer", bill.Peer)
-	fmt.Println("itemname", bill.ItemName)
-	fmt.Println("txtype", bill.TxType)
-	fmt.Println("status", bill.Status)
-	fmt.Println("servicefee", bill.ServiceFee)
-	fmt.Println("refund", bill.Refund)
-	fmt.Println("comment", bill.Comment)
-	fmt.Println("moneyStatus", bill.MoneyStatus)
-	fmt.Println("plus", bill.PlusAccount)
-	fmt.Println("minus", bill.MinusAccount)
 }

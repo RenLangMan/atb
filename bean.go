@@ -18,7 +18,6 @@ func WriteBean(conf *Config) error {
 		return err
 	}
 	defer file.Close()
-	// write header
 	_, err = io.WriteString(file, "option \"title\" \"" + conf.Title + "\"\n")
 	if err != nil {
 		log.Println("write option title error:", err)
@@ -29,7 +28,6 @@ func WriteBean(conf *Config) error {
 		log.Println("write option currency error:", err)
 		return err
 	}
-	// write open account
 	uniqMap := make(map[string]bool)
 	for _, attr := range conf.AccountList {
 		uniqMap[attr.MinusAccount] = true
@@ -68,7 +66,6 @@ func writeBill(file *os.File, bill AliBill, conf *Config) error {
 	if err != nil {
 		return err
 	}
-	str = "\t"
 	if bill.PlusAccount == "" {
 		bill.PlusAccount = conf.DefaultPlusAccount
 	}
@@ -76,19 +73,33 @@ func writeBill(file *os.File, bill AliBill, conf *Config) error {
 		bill.MinusAccount = conf.DefaultMinusAccount
 	}
 	if bill.MoneyStatus == MoneySend {
-		str = str + bill.PlusAccount + " " + fmt.Sprintf("%.2f", bill.Money) + " "
-		str = str + conf.DefaultCurrency + "\n"
-		str = str + "\t" + bill.MinusAccount + " -" + fmt.Sprintf("%.2f", bill.Money) + " "
-		str = str + conf.DefaultCurrency + "\n\n"
+		str = getBillStr(bill, conf)
 	} else {
-		str = str + bill.MinusAccount + " " + fmt.Sprintf("%.2f", bill.Money) + " "
-		str = str + conf.DefaultCurrency + "\n"
-		str = str + "\t" + bill.PlusAccount + " -" + fmt.Sprintf("%.2f", bill.Money) + " "
-		str = str + conf.DefaultCurrency + "\n\n"
+		str = getReverseBillStr(bill, conf)
 	}
 	_, err = io.WriteString(file, str)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+
+func getBillStr(bill AliBill, conf *Config) string {
+	str := "\t"
+	str = str + bill.PlusAccount + " " + fmt.Sprintf("%.2f", bill.Money) + " "
+	str = str + conf.DefaultCurrency + "\n"
+	str = str + "\t" + bill.MinusAccount + " -" + fmt.Sprintf("%.2f", bill.Money) + " "
+	str = str + conf.DefaultCurrency + "\n\n"
+	return str
+}
+
+
+func getReverseBillStr(bill AliBill, conf *Config) string {
+	str := "\t"
+	str = str + bill.MinusAccount + " " + fmt.Sprintf("%.2f", bill.Money) + " "
+	str = str + conf.DefaultCurrency + "\n"
+	str = str + "\t" + bill.PlusAccount + " -" + fmt.Sprintf("%.2f", bill.Money) + " "
+	str = str + conf.DefaultCurrency + "\n\n"
+	return str
 }
