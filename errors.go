@@ -14,3 +14,5 @@ var ErrBadAliFmt = errors.New("bad alipay bill format")
 var ErrNoDefault = errors.New("no default account in strict mode")
 // ErrBadTxType indicates we could not get the tx type
 var ErrBadTxType = errors.New("we could not recgnize the tx type")
+// ErrBadMatchType indicates you write an error rule
+var ErrBadMatchType = errors.New("bad match type")

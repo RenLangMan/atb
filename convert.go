@@ -20,11 +20,38 @@ type AliBillAttr struct {
 	PeerMatchMethod MatchType `json:"peerMatchMethod"`
 	ItemName []string `json:"itemName"`
 	ItemNameMatchMethod MatchType `json:"itemNameMatchMethod"`
-	Comment []string `json:"comment"`
-	CommentMatchMethod MatchType `commentMatchMethod`
+	Money []float64 `json:"money"`
+	MoneyMatchMethod MatchType `json:"moneyMatchMethod"`
 	PlusAccount string `json:"plusAccount"`
 	MinusAccount string `json:"minusAccount"`
 }
+
+
+func checkAttrNum(sets []float64, method MatchType, check float64) bool {
+	if method == MatchTypeNumGreaterThan {
+		if check > sets[0] {
+			return true
+		}
+		return false
+	}
+	if method == MatchTypeNumLessThan {
+		if check < sets[0] {
+			return true
+		}
+		return false
+	}
+	if method == MatchTypeNumRange {
+		if check > sets[0] && check < sets[1] {
+			return true
+		}
+		return false
+	}
+	if check == sets[0] {
+		return true
+	}
+	return false
+}
+
 
 func checkAttr(sets []string, method MatchType, check string) bool {
 	// if set is null slice, it should be handled by caller
@@ -56,7 +83,7 @@ func getAccount(bill AliBill, list []AliBillAttr) (string, string) {
 		if len(attr.Status) != 0 && checkAttr(attr.Status, attr.StatusMatchMethod, bill.Status) == false {
 			continue
 		}
-		if len(attr.Comment) != 0 && checkAttr(attr.Comment, attr.CommentMatchMethod, bill.Comment) == false {
+		if len(attr.Money) != 0 && checkAttrNum(attr.Money, attr.MoneyMatchMethod, bill.Money) == false {
 			continue
 		}
 		return attr.PlusAccount, attr.MinusAccount

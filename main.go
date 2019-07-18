@@ -39,6 +39,11 @@ func main() {
 		log.Println("read config error:", err)
 		return
 	}
+	err = CheckConfig(&conf)
+	if err != nil {
+		log.Println("check config file error:", err)
+		return
+	}
 	err = ReadAliBill(*flagInput)
 	if err != nil {
 		log.Println("read ali bill error:", err)
