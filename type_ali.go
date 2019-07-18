@@ -90,6 +90,10 @@ func CheckConfig(conf *Config) error {
 			log.Println("bad money match type at idx :", idx)
 			return ErrBadMatchType
 		}
+		if attr.PlusAccount == "" || attr.MinusAccount == "" {
+			log.Println("we do not allow empty account")
+			return ErrBadAccount
+		}
 	}
 	return nil
 }

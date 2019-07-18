@@ -36,6 +36,9 @@ func WriteBean(conf *Config) error {
 	uniqMap[conf.DefaultPlusAccount] = true
 	uniqMap[conf.DefaultMinusAccount] = true
 	for k, _ := range uniqMap {
+		if k == "" {
+			continue
+		}
 		_, err = io.WriteString(file, "1970-01-01 open " + k + "\n")
 		if err != nil {
 			log.Println("write open account error:", err)
