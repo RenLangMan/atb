@@ -1,0 +1,29 @@
+$ bean-report example.bean balances
+Assets:Bank:存储卡:招行8888            800 CNY
+Assets:Item:实物:手机                 100 CNY
+Equity:Lent:债权                    100 CNY
+Expenses:Food:外卖                  100 CNY
+Income:Salary:公司卡               -1000 CNY
+Liabilities:CreditCard:招行0000    -100 CNY
+
+$ bean-report example.bean equity
+Currency  Net Worth
+--------  ---------
+CNY          800.00
+--------  ---------
+
+$ bean-report example.bean cash
+Account                          Units  Currency  Cost Currency  Average Cost  Price  Book Value  Market Value
+-----------------------------  -------  --------  -------------  ------------  -----  ----------  ------------
+Assets:Bank:存储卡:招行8888          800.00       CNY            CNY                           800.00        800.00
+Assets:Item:实物:手机               100.00       CNY            CNY                           100.00        100.00
+Liabilities:CreditCard:招行0000  -100.00       CNY            CNY                          -100.00       -100.00
+-----------------------------  -------  --------  -------------  ------------  -----  ----------  ------------
+
+$ bean-report example.bean check
+
+$ bean-report example.bean networth
+Currency  Net Worth
+--------  ---------
+CNY          800.00
+--------  ---------

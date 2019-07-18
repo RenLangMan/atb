@@ -1,0 +1,26 @@
+option "title" "肖工的测试账本"
+option "operating_currency" "CNY"
+
+1970-01-01 open Assets:Bank:存储卡:招行8888
+1970-01-01 open Expenses:Food:外卖
+1970-01-01 open Income:Salary:公司卡
+1970-01-01 open Assets:Item:实物:手机
+1970-01-01 open Liabilities:CreditCard:招行0000
+1970-01-01 open Equity:Lent:债权
+
+
+2019-01-01 * "发工资" "公司"
+	Assets:Bank:存储卡:招行8888 1000 CNY
+	Income:Salary:公司卡 -1000 CNY
+
+2019-01-02 * "购物" "买手机"
+	Assets:Bank:存储卡:招行8888 -100 CNY
+	Assets:Item:实物:手机 100 CNY
+
+2019-01-03 * "购物" "买吃的"
+	Expenses:Food:外卖 100 CNY
+	Liabilities:CreditCard:招行0000 -100 CNY
+
+2019-01-04 * "借钱" "给朋友"
+	Assets:Bank:存储卡:招行8888 -100 CNY
+	Equity:Lent:债权 100 CNY

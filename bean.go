@@ -72,11 +72,7 @@ func writeBill(file *os.File, bill AliBill, conf *Config) error {
 	if bill.MinusAccount == "" {
 		bill.MinusAccount = conf.DefaultMinusAccount
 	}
-	if bill.MoneyStatus == MoneySend {
-		str = getBillStr(bill, conf)
-	} else {
-		str = getReverseBillStr(bill, conf)
-	}
+	str = getBillStr(bill, conf)
 	_, err = io.WriteString(file, str)
 	if err != nil {
 		return err
@@ -90,16 +86,6 @@ func getBillStr(bill AliBill, conf *Config) string {
 	str = str + bill.PlusAccount + " " + fmt.Sprintf("%.2f", bill.Money) + " "
 	str = str + conf.DefaultCurrency + "\n"
 	str = str + "\t" + bill.MinusAccount + " -" + fmt.Sprintf("%.2f", bill.Money) + " "
-	str = str + conf.DefaultCurrency + "\n\n"
-	return str
-}
-
-
-func getReverseBillStr(bill AliBill, conf *Config) string {
-	str := "\t"
-	str = str + bill.MinusAccount + " " + fmt.Sprintf("%.2f", bill.Money) + " "
-	str = str + conf.DefaultCurrency + "\n"
-	str = str + "\t" + bill.PlusAccount + " -" + fmt.Sprintf("%.2f", bill.Money) + " "
 	str = str + conf.DefaultCurrency + "\n\n"
 	return str
 }
