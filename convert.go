@@ -10,6 +10,22 @@ import (
 	"log"
 )
 
+
+// AliBillAttr helps us determine which account it
+// should go
+type AliBillAttr struct {
+	Status []string `json:"status"`
+	StatusMatchMethod MatchType `json:"statusMatchMethod"`
+	Peer []string `json:"peer"`
+	PeerMatchMethod MatchType `json:"peerMatchMethod"`
+	ItemName []string `json:"itemName"`
+	ItemNameMatchMethod MatchType `json:"itemNameMatchMethod"`
+	Comment []string `json:"comment"`
+	CommentMatchMethod MatchType `commentMatchMethod`
+	PlusAccount string `json:"plusAccount"`
+	MinusAccount string `json:"minusAccount"`
+}
+
 func checkAttr(sets []string, method MatchType, check string) bool {
 	// if set is null slice, it should be handled by caller
 	if method == MatchTypeContain {
@@ -40,6 +56,9 @@ func getAccount(bill AliBill, list []AliBillAttr) (string, string) {
 		if len(attr.Status) != 0 && checkAttr(attr.Status, attr.StatusMatchMethod, bill.Status) == false {
 			continue
 		}
+		if len(attr.Comment) != 0 && checkAttr(attr.Comment, attr.CommentMatchMethod, bill.Comment) == false {
+			continue
+		}
 		return attr.PlusAccount, attr.MinusAccount
 	}
 	// default account
@@ -47,6 +66,7 @@ func getAccount(bill AliBill, list []AliBillAttr) (string, string) {
 }
 
 
+// FillBills fill plus and minus account for every bill
 func FillBills(list []AliBillAttr) error {
 	for idx, bill := range AliBillList {
 		plus, minus := getAccount(bill, list)
@@ -57,7 +77,6 @@ func FillBills(list []AliBillAttr) error {
 		}
 		AliBillList[idx].MinusAccount = minus
 		AliBillList[idx].PlusAccount = plus
-		// printBill(AliBillList[idx])
 	}
 	return nil
 }
