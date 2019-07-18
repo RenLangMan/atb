@@ -62,17 +62,20 @@ const (
 
 func CheckConfig(conf *Config) error {
 	for idx, attr := range conf.AccountList {
-		if attr.StatusMatchMethod != MatchTypeContain && attr.StatusMatchMethod != MatchTypeEqual {
+		if attr.StatusMatchMethod != "" && attr.StatusMatchMethod != MatchTypeContain && attr.StatusMatchMethod != MatchTypeEqual {
 			log.Println("bad status match type at idx:", idx)
 			return ErrBadMatchType
 		}
-		if attr.PeerMatchMethod != MatchTypeContain && attr.PeerMatchMethod != MatchTypeEqual {
+		if attr.PeerMatchMethod != "" && attr.PeerMatchMethod != MatchTypeContain && attr.PeerMatchMethod != MatchTypeEqual {
 			log.Println("bad peer match type at idx:", idx)
 			return ErrBadMatchType
 		}
-		if attr.ItemNameMatchMethod != MatchTypeContain && attr.ItemNameMatchMethod != MatchTypeEqual {
+		if attr.ItemNameMatchMethod != "" && attr.ItemNameMatchMethod != MatchTypeContain && attr.ItemNameMatchMethod != MatchTypeEqual {
 			log.Println("bad itemName match type at idx:", idx)
 			return ErrBadMatchType
+		}
+		if attr.MoneyMatchMethod == "" {
+			continue
 		}
 		if attr.MoneyMatchMethod != MatchTypeNumEqual && attr.MoneyMatchMethod != MatchTypeNumGreaterThan &&
 			attr.MoneyMatchMethod != MatchTypeNumLessThan && attr.MoneyMatchMethod != MatchTypeNumRange {

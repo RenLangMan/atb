@@ -122,4 +122,5 @@ func printBill(bill AliBill) {
 	fmt.Println("moneyStatus", bill.MoneyStatus)
 	fmt.Println("plus", bill.PlusAccount)
 	fmt.Println("minus", bill.MinusAccount)
+	fmt.Println("money", bill.Money)
 }
