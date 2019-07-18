@@ -20,3 +20,6 @@ fish.conf
 # example file
 real.bean
 real.txt
+
+# idea
+.idea/

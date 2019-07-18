@@ -3,12 +3,11 @@
 
 package main
 
-
 import (
-	"os"
-	"log"
-	"io"
 	"fmt"
+	"io"
+	"log"
+	"os"
 )
 
 func WriteBean(conf *Config) error {
@@ -18,12 +17,12 @@ func WriteBean(conf *Config) error {
 		return err
 	}
 	defer file.Close()
-	_, err = io.WriteString(file, "option \"title\" \"" + conf.Title + "\"\n")
+	_, err = io.WriteString(file, "option \"title\" \""+conf.Title+"\"\n")
 	if err != nil {
 		log.Println("write option title error:", err)
 		return err
 	}
-	_, err = io.WriteString(file, "option \"operating_currency\" \"" + conf.DefaultCurrency + "\"\n\n")
+	_, err = io.WriteString(file, "option \"operating_currency\" \""+conf.DefaultCurrency+"\"\n\n")
 	if err != nil {
 		log.Println("write option currency error:", err)
 		return err
@@ -39,7 +38,7 @@ func WriteBean(conf *Config) error {
 		if k == "" {
 			continue
 		}
-		_, err = io.WriteString(file, "1970-01-01 open " + k + "\n")
+		_, err = io.WriteString(file, "1970-01-01 open "+k+"\n")
 		if err != nil {
 			log.Println("write open account error:", err)
 			return err
@@ -61,7 +60,6 @@ func WriteBean(conf *Config) error {
 	return nil
 }
 
-
 func writeBill(file *os.File, bill AliBill, conf *Config) error {
 	str := bill.CreateTime.Format("2006-01-02")
 	str = str + " * \"" + bill.Peer + "\" \"" + bill.ItemName + "\"\n"
@@ -82,7 +80,6 @@ func writeBill(file *os.File, bill AliBill, conf *Config) error {
 	}
 	return nil
 }
-
 
 func getBillStr(bill AliBill, conf *Config) string {
 	str := "\t"

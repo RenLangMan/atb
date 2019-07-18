@@ -3,13 +3,11 @@
 
 package main
 
-
 import (
-	"log"
-	"github.com/dilfish/tools"
 	"flag"
+	"github.com/dilfish/tools"
+	"log"
 )
-
 
 var flagInput = flag.String("i", "", "input file name")
 var flagOutput = flag.String("o", "output.bean", "output file name")
@@ -18,11 +16,11 @@ var flagStrict = flag.Bool("s", false, "use strict mode: no default account")
 
 // Config set all default values
 type Config struct {
-	DefaultCurrency string `json:"defaultCurrency"`
-	DefaultPlusAccount string `json:"defaultPlusAccount"`
-	DefaultMinusAccount string `json:"defaultMinusAccount"`
-	Title string `json:"title"`
-	AccountList []AliBillAttr `json:"accountList"`
+	DefaultCurrency     string        `json:"defaultCurrency"`
+	DefaultPlusAccount  string        `json:"defaultPlusAccount"`
+	DefaultMinusAccount string        `json:"defaultMinusAccount"`
+	Title               string        `json:"title"`
+	AccountList         []AliBillAttr `json:"accountList"`
 }
 
 func main() {

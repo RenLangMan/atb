@@ -3,29 +3,26 @@
 
 package main
 
-
 import (
 	"fmt"
-	"strings"
 	"log"
+	"strings"
 )
-
 
 // AliBillAttr helps us determine which account it
 // should go
 type AliBillAttr struct {
-	Status []string `json:"status"`
-	StatusMatchMethod MatchType `json:"statusMatchMethod"`
-	Peer []string `json:"peer"`
-	PeerMatchMethod MatchType `json:"peerMatchMethod"`
-	ItemName []string `json:"itemName"`
+	Status              []string  `json:"status"`
+	StatusMatchMethod   MatchType `json:"statusMatchMethod"`
+	Peer                []string  `json:"peer"`
+	PeerMatchMethod     MatchType `json:"peerMatchMethod"`
+	ItemName            []string  `json:"itemName"`
 	ItemNameMatchMethod MatchType `json:"itemNameMatchMethod"`
-	Money []float64 `json:"money"`
-	MoneyMatchMethod MatchType `json:"moneyMatchMethod"`
-	PlusAccount string `json:"plusAccount"`
-	MinusAccount string `json:"minusAccount"`
+	Money               []float64 `json:"money"`
+	MoneyMatchMethod    MatchType `json:"moneyMatchMethod"`
+	PlusAccount         string    `json:"plusAccount"`
+	MinusAccount        string    `json:"minusAccount"`
 }
-
 
 func checkAttrNum(sets []float64, method MatchType, check float64) bool {
 	if method == MatchTypeNumGreaterThan {
@@ -52,7 +49,6 @@ func checkAttrNum(sets []float64, method MatchType, check float64) bool {
 	return false
 }
 
-
 func checkAttr(sets []string, method MatchType, check string) bool {
 	// if set is null slice, it should be handled by caller
 	if method == MatchTypeContain {
@@ -70,7 +66,6 @@ func checkAttr(sets []string, method MatchType, check string) bool {
 	}
 	return false
 }
-
 
 func getAccount(bill AliBill, list []AliBillAttr) (string, string) {
 	for _, attr := range list {
@@ -92,7 +87,6 @@ func getAccount(bill AliBill, list []AliBillAttr) (string, string) {
 	return "", ""
 }
 
-
 // FillBills fill plus and minus account for every bill
 func FillBills(list []AliBillAttr) error {
 	for idx, bill := range AliBillList {
@@ -107,7 +101,6 @@ func FillBills(list []AliBillAttr) error {
 	}
 	return nil
 }
-
 
 func printBill(bill AliBill) {
 	fmt.Println("---------------------")
