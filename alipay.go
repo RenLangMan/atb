@@ -3,44 +3,42 @@
 
 package main
 
-
 import (
-	"github.com/dilfish/tools"
-	"time"
 	"log"
-	"strings"
 	"strconv"
-)
+	"strings"
+	"time"
 
+	"github.com/dilfish/tools"
+)
 
 // LineNum records which line we proceed
 var LineNum int
+
 // AliBillList stores all of tx in a file
 var AliBillList []AliBill
 
-
 type AliBill struct {
-	DealNo string `json:"dealNo"` // 交易号
-	OrderNo string `json:"orderNo"` // 商家订单号
-	CreateTime time.Time `json:"createTime"` // 交易创建时间
-	PayTime time.Time `json:"payTime"` // 付款时间
-	LastUpdate time.Time `json:"lastUpdate"` // 最近修改时间
-	DealSrc string `json:"dealSrc"` // 交易来源地
-	Type string `json:"type"` // 类型
-	Peer string `json:"peer"` // 交易对方
-	ItemName string `json:"itemName"` // 商品名称
-	Money float64 `json:"money"` // 金额
-	TxType TxTypeType `json:"txType"` // 收/支
-	Status string `json:"status"` // 交易状态
-	ServiceFee float64 `json:"serviceFee"` // 服务费
-	Refund float64 `json:"refund"` // 成功退款
-	Comment string `json:"comment"` // 备注
+	DealNo      string          `json:"dealNo"`      // 交易号
+	OrderNo     string          `json:"orderNo"`     // 商家订单号
+	CreateTime  time.Time       `json:"createTime"`  // 交易创建时间
+	PayTime     time.Time       `json:"payTime"`     // 付款时间
+	LastUpdate  time.Time       `json:"lastUpdate"`  // 最近修改时间
+	DealSrc     string          `json:"dealSrc"`     // 交易来源地
+	Type        string          `json:"type"`        // 类型
+	Peer        string          `json:"peer"`        // 交易对方
+	ItemName    string          `json:"itemName"`    // 商品名称
+	Money       float64         `json:"money"`       // 金额
+	TxType      TxTypeType      `json:"txType"`      // 收/支
+	Status      string          `json:"status"`      // 交易状态
+	ServiceFee  float64         `json:"serviceFee"`  // 服务费
+	Refund      float64         `json:"refund"`      // 成功退款
+	Comment     string          `json:"comment"`     // 备注
 	MoneyStatus MoneyStatusType `json:"moneyStatus"` // 资金状态
 	// below is filled at runtime
 	MinusAccount string `json:"minusAccount"`
-	PlusAccount string `json:"plusAccount"`
+	PlusAccount  string `json:"plusAccount"`
 }
-
 
 func parseAlipayBill(line string) error {
 	var err error
@@ -62,19 +60,19 @@ func parseAlipayBill(line string) error {
 	var bill AliBill
 	bill.DealNo = array[0]
 	bill.OrderNo = array[1]
-	bill.CreateTime, err = time.Parse(LocalTimeFmt, array[2] + " +0800")
+	bill.CreateTime, err = time.Parse(LocalTimeFmt, array[2]+" +0800")
 	if err != nil {
 		log.Println("parse create time error:", array[2], err)
 		return err
 	}
 	if array[3] != "" {
-		bill.PayTime, err = time.Parse(LocalTimeFmt, array[3] + " +0800")
+		bill.PayTime, err = time.Parse(LocalTimeFmt, array[3]+" +0800")
 		if err != nil {
 			log.Println("parse paytime error:", array[3], err, array)
 			return err
 		}
 	}
-	bill.LastUpdate, err = time.Parse(LocalTimeFmt, array[4] + " +0800")
+	bill.LastUpdate, err = time.Parse(LocalTimeFmt, array[4]+" +0800")
 	if err != nil {
 		log.Println("parse last update error:", array[4], err)
 		return err
@@ -113,7 +111,6 @@ func parseAlipayBill(line string) error {
 	AliBillList = append(AliBillList, bill)
 	return nil
 }
-
 
 // ReadAliBill check all lines of bill
 func ReadAliBill(fn string) error {

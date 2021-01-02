@@ -5,8 +5,9 @@ package main
 
 import (
 	"flag"
-	"github.com/dilfish/tools"
 	"log"
+
+	"github.com/dilfish/tools"
 )
 
 var flagInput = flag.String("i", "", "input file name")
